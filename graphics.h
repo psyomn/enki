@@ -13,6 +13,11 @@
 
 #include "window.h"
 
+/***
+ * TODO: decide if I want this: width and height are accessible through
+ * SDL_QueryTexture, but it would be extra pain to need to call that instead of
+ * storing useful properties like this.
+ */
 struct enki_texture {
 	SDL_Texture *sdl_texture;
 	size_t width;

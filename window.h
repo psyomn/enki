@@ -30,5 +30,8 @@ struct enki_window {
 struct enki_window *enki_window_new(const char *title, size_t title_len,
 				    size_t width, size_t height);
 
-
+/**
+ * enki_window_free - will free the resource.
+ */
+void enki_window_free(struct enki_window *window);
 #endif

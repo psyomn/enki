@@ -17,6 +17,9 @@ struct enki_window *enki_window_new(const char *title, size_t title_len,
     win->width = width;
     win->height = height;
 
+    win->title = calloc(1, title_len);
+    strncpy(win->title, title, title_len);
+
     win->window = SDL_CreateWindow(win->title,
 				   SDL_WINDOWPOS_UNDEFINED,
 				   SDL_WINDOWPOS_UNDEFINED,
@@ -46,3 +49,18 @@ cleanup_exit:
     return NULL;
 }
 
+void enki_window_free(struct enki_window *window)
+{
+	struct enki_window {
+		char *title;
+		size_t width;
+		size_t height;
+		SDL_Window *window;
+		SDL_Renderer *renderer;
+		double fps;
+	};
+
+	free(window->title);
+	SDL_DestroyWindow(window->window);
+	free(window);
+}

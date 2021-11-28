@@ -15,8 +15,12 @@
 #include "window.h"
 #include "tilemap.h"
 
+
+/**
+ * TODO: I'll need to think about the ergonomics of this.
+ */
 struct enki_tilemap *create_map(struct enki_texture *texture) {
-	struct enki_tilemap *tm = enki_tilemap_new(texture, 10, 10, 2);
+	struct enki_tilemap *tm = enki_tilemap_new(texture, 32, 32, 2);
 
 	uint16_t layer_1[] = {
 		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
@@ -63,8 +67,10 @@ int main(void)
 		window_width = 640,
 		window_height = 640;
 
+	const char *window_title = "the game";
 	struct enki_window *win =
-		enki_window_new("the", 4, window_width, window_height);
+		enki_window_new(window_title, sizeof(window_title),
+				window_width, window_height);
 
 	struct enki_texture *summer_texture = enki_texture_load_or_die(
 		"assets/Summer_Ground_32x32.png", win);
@@ -72,7 +78,8 @@ int main(void)
 	struct enki_texture *autumn_texture = enki_texture_load_or_die(
 		"assets/Autumn_Ground_32x32.png", win);
 
-	struct enki_object *summer_tile = enki_object_new(0, 0, 32, 32, summer_texture);
+	struct enki_object *summer_tile = enki_object_new(0, 0, 32, 32,
+							  summer_texture);
 	if (summer_tile == NULL) {
 		fprintf(stderr, "error creating summer tile object\n");
 		return -1;
@@ -80,7 +87,8 @@ int main(void)
 	enki_object_set_col(summer_tile, 0, 0);
 
 
-	struct enki_object *autumn_tile = enki_object_new(32, 0, 32, 32, autumn_texture);
+	struct enki_object *autumn_tile = enki_object_new(32, 0, 32, 32,
+							  autumn_texture);
 	if (autumn_tile == NULL) {
 		fprintf(stderr, "error creating autumn tile texture\n");
 		return -1;
@@ -100,7 +108,7 @@ int main(void)
 		    obj_list,
 		    ARRAY_SIZE(obj_list));
 
-	/* C l e a n u p */
+	/* Cleanup */
 	enki_texture_free(summer_texture);
 	enki_texture_free(autumn_texture);
 

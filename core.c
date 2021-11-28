@@ -26,15 +26,40 @@ enum enki_status enki_init(void)
 	return ENKI_STATUS_OK;
 }
 
+void render_tilemap(SDL_Renderer *rr, struct enki_tilemap *tm)
+{
+	const size_t length = tm->len;
+
+	SDL_Rect pos = {
+		.x = 0, .y = 0,
+		.w = tm->tile_width, .h = tm->tile_height,
+	},
+	stretch = {
+		.x = 0, .y = 0,
+		.w = tm->tile_width, .h = tm->tile_height,
+	};
+
+	for (size_t l = 0; l < tm->layers_len; ++l) {
+		for (size_t i = 0; i < tm->tile_height; ++i) {
+			for (size_t j = 0; j < tm->tile_width; ++j){
+				uint16_t t_data = enki_tilemap_at(tm, j, i, l);
+
+				SDL_RenderCopy(rr,
+					       tm->texture->sdl_texture,
+					       &pos, &stretch);
+			}
+		}
+	}
+}
 
 void enki_render(struct enki_window *win,
 		 struct enki_tilemap *tilemap,
 		 struct enki_object **objlist,
+		 /* render_fn_t *(*render_fns)(SDL_Renderer *), */
 		 size_t objlen)
 {
-	// TODO: this should just be one render loop (eventually)
 	const double fragment = enki_calculate_frame_fragment(60.0);
-
+	// TODO: this should just be one render loop (eventually)
 	SDL_Event e = {0};
 	while (1) {
 		const double frame_start = SDL_GetPerformanceCounter();
@@ -42,12 +67,14 @@ void enki_render(struct enki_window *win,
 		while (SDL_PollEvent(&e) != 0)
 			if (e.type == SDL_QUIT) return;
 
-		for (size_t i = 0; i < objlen; ++i) {
-			SDL_RenderCopy(win->renderer,
-				       objlist[i]->texture->sdl_texture,
-				       &objlist[i]->tx_pos,
-				       &objlist[i]->collision);
-		}
+		render_tilemap(win->renderer, tilemap);
+
+		// for (size_t i = 0; i < objlen; ++i) {
+		// 	SDL_RenderCopy(win->renderer,
+		// 		       objlist[i]->texture->sdl_texture,
+		// 		       &objlist[i]->tx_pos,
+		// 		       &objlist[i]->collision);
+		// }
 
 		SDL_RenderPresent(win->renderer);
 

@@ -62,3 +62,4 @@ void enki_texture_free(struct enki_texture *texture)
 	SDL_DestroyTexture(texture->sdl_texture);
 	free(texture);
 }
+

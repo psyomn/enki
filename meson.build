@@ -99,3 +99,22 @@ executable('enki',
   link_with : enki_lib,
   dependencies : dep_all,
 )
+
+assets_dir = 'assets'
+custom_target('copy script',
+  input : assets_dir,
+  output : assets_dir,
+  command : ['cp', '-r', '@INPUT@', '@OUTPUT@'],
+  install : false,
+  build_by_default : true)
+
+## tests
+
+e = executable('tilemap_tests',
+  'tests/tilemap_tests.c',
+  link_with : enki_lib,
+  dependencies : dep_all,
+)
+
+test('tilemap_tests', e, args : [])
+

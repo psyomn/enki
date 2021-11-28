@@ -41,3 +41,4 @@ void enki_object_set_col(struct enki_object *object, int xpos, int ypos)
 	object->collision.x = xpos;
 	object->collision.y = ypos;
 }
+
