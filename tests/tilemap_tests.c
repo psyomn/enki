@@ -10,12 +10,12 @@
 static struct enki_tilemap* create_map(void)
 {
 	struct enki_window *window = enki_window_new(__FILE__, sizeof(__FILE__), 100, 100);
-	if (window == NULL)  goto error;
+	if (window == NULL) goto error;
 
 	struct enki_texture *texture = enki_texture_load_or_die(ASSET_FILE, window);
 	if (texture == NULL) goto cleanup_window;
 
-	struct enki_tilemap *tm = enki_tilemap_new(texture, 3, 3, 3);
+	struct enki_tilemap *tm = enki_tilemap_new(texture, 32, 32, 3);
 	if (tm == NULL) goto cleanup_texture;
 
 	uint16_t layer_1[] = {
@@ -70,7 +70,7 @@ static int test_first_row(const struct enki_tilemap *tm)
 		  (enki_tilemap_at(tm, 1, 1, 2) == 1));
 }
 
-static int test_xy_to_pos(const struct enki_tilemap *tm)
+static int test_xy_to_pos_square(const struct enki_tilemap *tm)
 {
 	/* TODO: this might belong on the function header.
 	 *
@@ -102,14 +102,19 @@ static int test_xy_to_pos(const struct enki_tilemap *tm)
 		size_t expect_x;
 		size_t expect_y;
 	} tcs[] = {
-		{.id = 0, .x = 0, .y = 0, .expect_x = 0, .expect_y = 0}
+		{.id = 0, .x = 0, .y = 0, .expect_x = 0, .expect_y = 0},
+		{.id = 4, .x = 0, .y = 0, .expect_x = 1, .expect_y = 1},
+		{.id = 7, .x = 0, .y = 0, .expect_x = 1, .expect_y = 2},
+		{.id = 9, .x = 0, .y = 0, .expect_x = 2, .expect_y = 2},
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(tcs); ++i) {
 		enki_tilemap_id_to_xy(tm, 0, &tcs[i].x, &tcs[i].y);
 		if (tcs[i].x != tcs[i].expect_x ||
 		    tcs[i].y != tcs[i].expect_y) {
-			printf("expected {id:%d}{%lu,%lu} but got {%lu,%lu}\n",
+			printf("[%lu] %s: expected {id:%d}{%lu,%lu} but got {%lu,%lu}\n",
+			       i,
+			       __func__,
 			       tcs->id,
 			       tcs[i].x, tcs[i].y,
 			       tcs[i].expect_x, tcs[i].expect_y);
@@ -130,7 +135,7 @@ int main(void)
 
 	const int ret =
 		test_first_row(tm) |
-		test_xy_to_pos(tm) ;
+		test_xy_to_pos_square(tm) ;
 
 	enki_tilemap_free(tm);
 

@@ -65,10 +65,12 @@ uint16_t enki_tilemap_at(const struct enki_tilemap *tilemap,
 void enki_tilemap_id_to_xy(const struct enki_tilemap *tilemap,
 			   const uint16_t id, size_t *x, size_t *y)
 {
-	// TODO
-	*x = -1;
-	*y = -1;
-
-	const size_t y_pos = id / tilemap->max_w_index;
-	*y = y_pos * tilemap->tile_height;
+	// TODO: recheck calculations
+	printf("%d  \n", id);
+	printf("%lu \n", *x);
+	printf("%lu \n", *y);
+	printf("%lu \n", tilemap->max_w_index);
+	printf("%lu \n", tilemap->max_h_index);
+	*x = id % tilemap->max_w_index;
+	*y = id / tilemap->max_w_index;
 }
