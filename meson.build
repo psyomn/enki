@@ -62,41 +62,28 @@ c_flags = [
 # libenki
 
 enki_srcs = [
-  'core.c',
-  'graphics.c',
-  'object.c',
-  'window.c',
-  'tilemap.c',
+  'enki/core.c',
+  'enki/graphics.c',
+  'enki/object.c',
+  'enki/window.c',
+  'enki/tilemap.c',
 ]
 
 enki_hdrs = [
-  'core.h',
-  'common.h',
-  'graphics.h',
-  'object.h',
-  'window.h',
-  'tilemap.h',
+  'enki/core.h',
+  'enki/common.h',
+  'enki/graphics.h',
+  'enki/object.h',
+  'enki/window.h',
+  'enki/tilemap.h',
 ]
 
-enki_inc = include_directories('.')
+enki_inc = include_directories('enki')
 
 enki_lib = shared_library(
   'enki',
   sources : enki_srcs,
   include_directories : enki_inc,
-  dependencies : dep_all,
-)
-
-# entry point
-
-srcs = [
-  'main.c',
-]
-
-executable('enki',
-  sources : srcs,
-  c_args : c_flags,
-  link_with : enki_lib,
   dependencies : dep_all,
 )
 
@@ -108,7 +95,14 @@ custom_target('copy script',
   install : false,
   build_by_default : true)
 
-## command utils
+## cmd
+
+executable('enki-example',
+  sources : ['cmd/enki-example.c'],
+  c_args : c_flags,
+  link_with : enki_lib,
+  dependencies : dep_all,
+)
 
 executable('enki-texture-info',
   sources : ['cmd/enki-texture-info.c'],

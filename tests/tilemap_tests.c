@@ -1,9 +1,9 @@
 #include <stdio.h>
 
-#include "common.h"
-#include "graphics.h"
-#include "tilemap.h"
-#include "window.h"
+#include "enki/common.h"
+#include "enki/graphics.h"
+#include "enki/tilemap.h"
+#include "enki/window.h"
 
 #define ASSET_FILE "./assets/test_32x32.png"
 

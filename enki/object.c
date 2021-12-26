@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "object.h"
+#include "enki/object.h"
 
 struct enki_object *enki_object_new(int xpos,
 				    int ypos,

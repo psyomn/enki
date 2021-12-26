@@ -11,7 +11,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "window.h"
+#include "enki/window.h"
 
 /***
  * TODO: decide if I want this: width and height are accessible through

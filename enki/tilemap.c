@@ -5,7 +5,7 @@
  * this source code is licensed under the bsd-style license found in the
  * license file in the root directory of this source tree.
  */
-#include "tilemap.h"
+#include "enki/tilemap.h"
 
 #include <assert.h>
 

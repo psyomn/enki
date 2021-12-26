@@ -8,8 +8,8 @@
 
 #include <stdio.h>
 
-#include "graphics.h"
-#include "tilemap.h"
+#include "enki/graphics.h"
+#include "enki/tilemap.h"
 
 int main(int argc, char *argv[])
 {

@@ -11,7 +11,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "graphics.h"
+#include "enki/graphics.h"
 
 struct enki_tilemap_layer {
 	uint16_t *tiles;

@@ -6,7 +6,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "graphics.h"
+#include "enki/graphics.h"
 
 #include <SDL2/SDL_image.h>
 

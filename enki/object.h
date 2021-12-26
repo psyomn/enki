@@ -11,7 +11,7 @@
 
 #include <SDL2/SDL.h>
 
-#include "graphics.h"
+#include "enki/graphics.h"
 
 struct enki_object {
 	/** contains rendering position information */

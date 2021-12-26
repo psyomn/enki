@@ -6,9 +6,8 @@
  * LICENSE file in the root directory of this source tree.
  */
 
-#include "common.h"
-
-#include "window.h"
+#include "enki/common.h"
+#include "enki/window.h"
 
 struct enki_window *enki_window_new(const char *title, size_t title_len,
 				    size_t width, size_t height)

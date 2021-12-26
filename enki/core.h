@@ -9,10 +9,10 @@
 #ifndef _ENKI_CORE_H
 #define _ENKI_CORE_H
 
-#include "common.h"
-#include "object.h"
-#include "window.h"
-#include "tilemap.h"
+#include "enki/common.h"
+#include "enki/object.h"
+#include "enki/window.h"
+#include "enki/tilemap.h"
 
 /**
  * enki_init - will initialize SDL specific stuff.

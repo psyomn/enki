@@ -8,12 +8,12 @@
 
 #include <stdio.h>
 
-#include "core.h"
-#include "common.h"
-#include "graphics.h"
-#include "object.h"
-#include "window.h"
-#include "tilemap.h"
+#include "enki/core.h"
+#include "enki/common.h"
+#include "enki/graphics.h"
+#include "enki/object.h"
+#include "enki/window.h"
+#include "enki/tilemap.h"
 
 
 /**
