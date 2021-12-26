@@ -13,6 +13,8 @@ struct enki_tilemap *enki_tilemap_new(struct enki_texture *texture,
 				      size_t width, size_t height,
 				      size_t num_layers)
 {
+	// TODO: width and height should be infered from texture instead
+
 	const size_t max_len = (width * height) * num_layers;
 	const size_t tile_bytes = max_len * sizeof(uint16_t);
 
@@ -65,12 +67,9 @@ uint16_t enki_tilemap_at(const struct enki_tilemap *tilemap,
 void enki_tilemap_id_to_xy(const struct enki_tilemap *tilemap,
 			   const uint16_t id, size_t *x, size_t *y)
 {
-	// TODO: recheck calculations
-	printf("%d  \n", id);
-	printf("%lu \n", *x);
-	printf("%lu \n", *y);
-	printf("%lu \n", tilemap->max_w_index);
-	printf("%lu \n", tilemap->max_h_index);
-	*x = id % tilemap->max_w_index;
-	*y = id / tilemap->max_w_index;
+	// TODO maybe optimize me
+	assert(id < tilemap->max_h_index * tilemap->max_h_index);
+
+	*x = (id % tilemap->max_w_index) * tilemap->tile_width;
+	*y = (id / tilemap->max_h_index) * tilemap->tile_height;
 }

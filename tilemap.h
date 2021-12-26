@@ -58,17 +58,17 @@ uint16_t enki_tilemap_at(const struct enki_tilemap *tilemap,
 			 size_t x, size_t y, size_t layer);
 
 /**
- * enki_tilemap_xy_to_pos - simple helper function that turns grid positions
+ * enki_tilemap_id_to_xy - simple helper function that turns grid positions
  * into pixel positions.
  *
  * example: tilemap of 32x32 pixel sized tiles.
  *
  *   +---+---+---+
- *   | 1 | 2 | 3 |
+ *   | 0 | 1 | 2 |
  *   +---+---+---+
- *   | 4 | 5 | 6 |
+ *   | 3 | 4 | 5 |
  *   +---+---+---+
- *   | 7 | 8 | 9 |
+ *   | 6 | 7 | 8 |
  *   +---+---+---+
  */
 void enki_tilemap_id_to_xy(const struct enki_tilemap *tilemap,

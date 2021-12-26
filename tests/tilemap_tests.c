@@ -5,7 +5,7 @@
 #include "tilemap.h"
 #include "window.h"
 
-#define ASSET_FILE "./assets/Autumn_Ground_32x32.png"
+#define ASSET_FILE "./assets/test_32x32.png"
 
 static struct enki_tilemap* create_map(void)
 {
@@ -57,16 +57,16 @@ error:
 static int test_first_row(const struct enki_tilemap *tm)
 {
 	return
-		!((enki_tilemap_at(tm, 0, 0, 0) == 1) &&
-		  (enki_tilemap_at(tm, 1, 0, 0) == 1) &&
-		  (enki_tilemap_at(tm, 2, 0, 0) == 1) &&
+		!((enki_tilemap_at(tm, 0, 0, 0) == 1) ||
+		  (enki_tilemap_at(tm, 1, 0, 0) == 1) ||
+		  (enki_tilemap_at(tm, 2, 0, 0) == 1) ||
 
-		  (enki_tilemap_at(tm, 0, 0, 1) == 0) &&
-		  (enki_tilemap_at(tm, 1, 0, 1) == 0) &&
-		  (enki_tilemap_at(tm, 1, 1, 1) == 1) &&
+		  (enki_tilemap_at(tm, 0, 0, 1) == 0) ||
+		  (enki_tilemap_at(tm, 1, 0, 1) == 0) ||
+		  (enki_tilemap_at(tm, 1, 1, 1) == 1) ||
 
-		  (enki_tilemap_at(tm, 0, 0, 2) == 1) &&
-		  (enki_tilemap_at(tm, 1, 0, 2) == 0) &&
+		  (enki_tilemap_at(tm, 0, 0, 2) == 1) ||
+		  (enki_tilemap_at(tm, 1, 0, 2) == 0) ||
 		  (enki_tilemap_at(tm, 1, 1, 2) == 1));
 }
 
@@ -81,7 +81,7 @@ static int test_xy_to_pos_square(const struct enki_tilemap *tm)
 	 *  +---+---+---+
 	 *  | 3 | 4 | 5 |
 	 *  +---+---+---+
-	 *  | 6 | 7 | 9 |
+	 *  | 6 | 7 | 8 |
 	 *  +---+---+---+
 	 *
 	 * where width is 3 * 32, height 3 * 32,
@@ -102,22 +102,22 @@ static int test_xy_to_pos_square(const struct enki_tilemap *tm)
 		size_t expect_x;
 		size_t expect_y;
 	} tcs[] = {
-		{.id = 0, .x = 0, .y = 0, .expect_x = 0, .expect_y = 0},
-		{.id = 4, .x = 0, .y = 0, .expect_x = 1, .expect_y = 1},
-		{.id = 7, .x = 0, .y = 0, .expect_x = 1, .expect_y = 2},
-		{.id = 9, .x = 0, .y = 0, .expect_x = 2, .expect_y = 2},
+		{.id = 0, .x = 0, .y = 0, .expect_x = 0,  .expect_y = 0},
+		{.id = 4, .x = 0, .y = 0, .expect_x = 32, .expect_y = 32},
+		{.id = 7, .x = 0, .y = 0, .expect_x = 32, .expect_y = 64},
+		{.id = 8, .x = 0, .y = 0, .expect_x = 64, .expect_y = 64},
 	};
 
 	for (size_t i = 0; i < ARRAY_SIZE(tcs); ++i) {
-		enki_tilemap_id_to_xy(tm, 0, &tcs[i].x, &tcs[i].y);
+		enki_tilemap_id_to_xy(tm, tcs[i].id, &tcs[i].x, &tcs[i].y);
 		if (tcs[i].x != tcs[i].expect_x ||
 		    tcs[i].y != tcs[i].expect_y) {
 			printf("[%lu] %s: expected {id:%d}{%lu,%lu} but got {%lu,%lu}\n",
 			       i,
 			       __func__,
-			       tcs->id,
-			       tcs[i].x, tcs[i].y,
-			       tcs[i].expect_x, tcs[i].expect_y);
+			       tcs[i].id,
+			       tcs[i].expect_x, tcs[i].expect_y,
+			       tcs[i].x, tcs[i].y);
 			return 1;
 		}
 	}

@@ -108,6 +108,15 @@ custom_target('copy script',
   install : false,
   build_by_default : true)
 
+## command utils
+
+executable('enki-texture-info',
+  sources : ['cmd/enki-texture-info.c'],
+  c_args : c_flags,
+  link_with : enki_lib,
+  dependencies : dep_all,
+)
+
 ## tests
 
 e = executable('tilemap_tests',
