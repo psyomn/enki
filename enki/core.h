@@ -10,6 +10,7 @@
 #define _ENKI_CORE_H
 
 #include "enki/common.h"
+#include "enki/level.h"
 #include "enki/object.h"
 #include "enki/window.h"
 #include "enki/tilemap.h"
@@ -23,6 +24,7 @@ enum enki_status enki_init(void);
  * enki_render - will render graphics, depending on what objects exist.
  */
 void enki_render(struct enki_window *win,
+		 struct enki_level *level,
 		 struct enki_tilemap *tilemap,
 		 struct enki_object **objlist,
 		 size_t objlen);

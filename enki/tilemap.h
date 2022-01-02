@@ -13,19 +13,13 @@
 
 #include "enki/graphics.h"
 
-struct enki_tilemap_layer {
-	uint16_t *tiles;
-};
-
 struct enki_tilemap {
 	struct enki_texture *texture;	/* shared */
 	size_t tile_width;
 	size_t tile_height;
-	size_t layers_len;
 	size_t len;			/* total bytes len */
 	size_t max_w_index;		/* texture_width divided by tile width */
 	size_t max_h_index;		/* texture_height divided by tile height */
-	uint16_t tiles[];
 };
 
 /**
@@ -34,28 +28,12 @@ struct enki_tilemap {
  * Returns a enki_tilemap pointer, or NULL on error.
  */
 struct enki_tilemap *enki_tilemap_new(struct enki_texture *texture,
-				      size_t width, size_t height,
-				      size_t num_layers);
+				      size_t width, size_t height);
 
 /**
  * enki_tilemap_free - will free the tilemap.
  */
 void enki_tilemap_free(struct enki_tilemap *tilemap);
-
-/**
- * enki_tilemap_at - given layer, and x, y coordinates, get that tile
- * id.  The ids are assigned as such, on a given picture/texture:
- *
- *   +---+---+---+
- *   | 1 | 1 | 1 |
- *   +---+---+---+
- *   | 1 | 0 | 1 |
- *   +---+---+---+
- *   | 1 | 1 | 1 |
- *   +---+---+---+
- */
-uint16_t enki_tilemap_at(const struct enki_tilemap *tilemap,
-			 size_t x, size_t y, size_t layer);
 
 /**
  * enki_tilemap_id_to_xy - simple helper function that turns grid positions

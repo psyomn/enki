@@ -64,6 +64,7 @@ c_flags = [
 enki_srcs = [
   'enki/core.c',
   'enki/graphics.c',
+  'enki/level.c',
   'enki/object.c',
   'enki/window.c',
   'enki/tilemap.c',
@@ -73,6 +74,7 @@ enki_hdrs = [
   'enki/core.h',
   'enki/common.h',
   'enki/graphics.h',
+  'enki/level.h',
   'enki/object.h',
   'enki/window.h',
   'enki/tilemap.h',
@@ -95,7 +97,7 @@ custom_target('copy script',
   install : false,
   build_by_default : true)
 
-## cmd
+## command utils
 
 executable('enki-example',
   sources : ['cmd/enki-example.c'],
@@ -113,11 +115,20 @@ executable('enki-texture-info',
 
 ## tests
 
-e = executable('tilemap_tests',
+tilemap_tests = executable(
+  'tilemap_tests',
   'tests/tilemap_tests.c',
   link_with : enki_lib,
   dependencies : dep_all,
 )
 
-test('tilemap_tests', e, args : [])
+level_tests = executable(
+  'level_tests',
+  'tests/level_tests.c',
+  link_with : enki_lib,
+  dependencies : dep_all,
+)
+
+test('tilemap_tests', tilemap_tests, args : [])
+test('level_tests', level_tests, args : [])
 

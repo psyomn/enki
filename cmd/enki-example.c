@@ -1,5 +1,5 @@
 /**
- * Copyright (c) 2021, Simon Symeonidis
+ * Copyright (c) 2021-2022, Simon Symeonidis
  * All rights reserved.
  *
  * This source code is licensed under the BSD-style license found in the
@@ -11,49 +11,38 @@
 #include "enki/core.h"
 #include "enki/common.h"
 #include "enki/graphics.h"
+#include "enki/level.h"
 #include "enki/object.h"
 #include "enki/window.h"
 #include "enki/tilemap.h"
 
+struct enki_tilemap *create_map(struct enki_texture *texture)
+{
+	return enki_tilemap_new(texture, 32, 32);
+}
 
-/**
- * TODO: I'll need to think about the ergonomics of this.
- */
-struct enki_tilemap *create_map(struct enki_texture *texture) {
-	struct enki_tilemap *tm = enki_tilemap_new(texture, 32, 32, 2);
-
-	uint16_t layer_1[] = {
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-		1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-		1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-		1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-		1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-		1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-		1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-		1, 0, 0, 0, 0, 0, 0, 0, 0, 1,
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
+struct enki_level *create_level(void)
+{
+	uint16_t tiles[] = {
+		1,  1,  1,  1,  1,  1,  1,  1,  1, 1,
+		1, 16, 16, 16, 16, 16, 16, 16, 16, 1,
+		1, 16, 16, 16, 16, 16, 16, 16, 16, 1,
+		1, 16, 16, 16, 16, 16, 16, 16, 16, 1,
+		1, 16, 16, 16, 16, 16, 16, 16, 16, 1,
+		1, 16, 16, 16, 16, 16, 16, 16, 16, 1,
+		1, 16, 16, 16, 16, 16, 16, 16, 16, 1,
+		1, 16, 16, 16, 16, 16, 16, 16, 16, 1,
+		1, 16, 16, 16, 16, 16, 16, 16, 16, 1,
+		1,  1,  1,  1,  1,  1,  1,  1,  1, 1,
 	};
 
-	uint16_t layer_2[] = {
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-		1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
-		1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
-		1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
-		1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
-		1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
-		1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
-		1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
-		1, 0, 0, 0, 1, 1, 0, 0, 0, 1,
-		1, 1, 1, 1, 1, 1, 1, 1, 1, 1,
-	};
+	struct enki_level *level = enki_level_new(10, 10);
 
-	memcpy(tm->tiles, layer_1, sizeof(layer_1));
+	enki_level_append_tiles(level,
+				&tiles[0],
+				ARRAY_SIZE(tiles));
 
-	memcpy(tm->tiles + ARRAY_SIZE(layer_1),
-	       layer_2, sizeof(layer_2));
-
-	return tm;
+	return level;
 }
 
 int main(void)
@@ -63,14 +52,14 @@ int main(void)
 		return -1;
 	}
 
-	const size_t
-		window_width = 640,
-		window_height = 640;
-
+	const size_t window_width = 320;
+	const size_t window_height = 320;
 	const char *window_title = "the game";
-	struct enki_window *win =
-		enki_window_new(window_title, sizeof(window_title),
-				window_width, window_height);
+	const size_t window_title_len = sizeof(window_title);
+	struct enki_window *win = enki_window_new(window_title,
+						  window_title_len,
+						  window_width,
+						  window_height);
 
 	struct enki_texture *summer_texture = enki_texture_load_or_die(
 		"assets/Summer_Ground_32x32.png", win);
@@ -85,7 +74,6 @@ int main(void)
 		return -1;
 	}
 	enki_object_set_col(summer_tile, 0, 0);
-
 
 	struct enki_object *autumn_tile = enki_object_new(32, 0, 32, 32,
 							  autumn_texture);
@@ -102,13 +90,16 @@ int main(void)
 
 	/* create some tilemap maker */
 	struct enki_tilemap *tilemap = create_map(summer_texture);
+	struct enki_level *level = create_level();
 
 	enki_render(win,
+		    level,
 		    tilemap,
 		    obj_list,
 		    ARRAY_SIZE(obj_list));
 
 	/* Cleanup */
+	enki_level_free(level);
 	enki_texture_free(summer_texture);
 	enki_texture_free(autumn_texture);
 

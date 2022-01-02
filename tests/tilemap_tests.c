@@ -1,7 +1,16 @@
+/**
+ * Copyright (c) 2021-2022, Simon Symeonidis
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 #include <stdio.h>
 
 #include "enki/common.h"
 #include "enki/graphics.h"
+#include "enki/level.h"
 #include "enki/tilemap.h"
 #include "enki/window.h"
 
@@ -15,34 +24,9 @@ static struct enki_tilemap* create_map(void)
 	struct enki_texture *texture = enki_texture_load_or_die(ASSET_FILE, window);
 	if (texture == NULL) goto cleanup_window;
 
-	struct enki_tilemap *tm = enki_tilemap_new(texture, 32, 32, 3);
+	struct enki_tilemap *tm = enki_tilemap_new(texture, 32, 32);
 	if (tm == NULL) goto cleanup_texture;
 
-	uint16_t layer_1[] = {
-		1, 1, 1,
-		1, 0, 1,
-		1, 1, 1,
-	};
-
-	uint16_t layer_2[] = {
-		0, 0, 0,
-		0, 1, 0,
-		0, 0, 0,
-	};
-
-	uint16_t layer_3[] = {
-		1, 0, 1,
-		0, 1, 0,
-		1, 0, 1,
-	};
-
-	memcpy(tm->tiles, layer_1, sizeof(layer_1));
-
-	memcpy(tm->tiles + ARRAY_SIZE(layer_1),
-	       layer_2, sizeof(layer_2));
-
-	memcpy(tm->tiles + ARRAY_SIZE(layer_1) + ARRAY_SIZE(layer_2),
-	       layer_3, sizeof(layer_3));
 
 	return tm;
 
@@ -52,22 +36,6 @@ cleanup_window:
 	enki_window_free(window);
 error:
 	return NULL;
-}
-
-static int test_first_row(const struct enki_tilemap *tm)
-{
-	return
-		!((enki_tilemap_at(tm, 0, 0, 0) == 1) ||
-		  (enki_tilemap_at(tm, 1, 0, 0) == 1) ||
-		  (enki_tilemap_at(tm, 2, 0, 0) == 1) ||
-
-		  (enki_tilemap_at(tm, 0, 0, 1) == 0) ||
-		  (enki_tilemap_at(tm, 1, 0, 1) == 0) ||
-		  (enki_tilemap_at(tm, 1, 1, 1) == 1) ||
-
-		  (enki_tilemap_at(tm, 0, 0, 2) == 1) ||
-		  (enki_tilemap_at(tm, 1, 0, 2) == 0) ||
-		  (enki_tilemap_at(tm, 1, 1, 2) == 1));
 }
 
 static int test_xy_to_pos_square(const struct enki_tilemap *tm)
@@ -134,8 +102,7 @@ int main(void)
 	}
 
 	const int ret =
-		test_first_row(tm) |
-		test_xy_to_pos_square(tm) ;
+		test_xy_to_pos_square(tm);
 
 	enki_tilemap_free(tm);
 
@@ -143,3 +110,5 @@ int main(void)
 error:
 	return 1;
 }
+
+

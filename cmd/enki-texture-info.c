@@ -1,5 +1,5 @@
 /**
- * copyright (c) 2021, simon symeonidis
+ * copyright (c) 2021-2022, simon symeonidis
  * all rights reserved.
  *
  * this source code is licensed under the bsd-style license found in the
@@ -32,18 +32,16 @@ int main(int argc, char *argv[])
 	struct enki_texture *texture = enki_texture_load_or_die(
 		texture_filename, win);
 
-	struct enki_tilemap* tm = enki_tilemap_new(texture, 32, 32, 1);
+	struct enki_tilemap* tm = enki_tilemap_new(texture, 32, 32);
 
 	printf(
 		"tile width  : %lu \n"
 		"tile height : %lu \n"
-		"layers len  : %lu \n"
 		"len         : %lu \n"
 		"max x index : %lu \n"
 		"max y index : %lu \n",
 		tm->tile_width,
 		tm->tile_height,
-		tm->layers_len,
 		tm->len,
 		tm->max_w_index,
 		tm->max_h_index
