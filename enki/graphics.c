@@ -45,7 +45,6 @@ cleanup_tx:
 	return NULL;
 }
 
-
 struct enki_texture *enki_texture_load_or_die(const char *path,
 					      struct enki_window *win)
 {

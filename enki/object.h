@@ -22,6 +22,12 @@ struct enki_object {
 
 	/** Shared.  Can be NULL. */
 	struct enki_texture *texture;
+
+	/** SDL_Event hooks. */
+	void (**ehooks)(SDL_Event*);
+
+	/** ehook len */
+	size_t ehook_len;
 };
 
 /**
@@ -37,4 +43,17 @@ struct enki_object *enki_object_new(int xpos,
 			            int width,
 			            int height,
 			            struct enki_texture *texture);
+
+/**
+ * enki_object_free - will free the game object
+ */
+void enki_object_free(struct enki_object *object);
+
+/**
+ * enki_object_add_ehook - adds a hook, to be executed upon an event.
+ *
+ * return 0 on success, return 1 on error (usually failure on realloc).
+ */
+int enki_object_add_ehook(struct enki_object *object,
+			  void (*ehook)(SDL_Event*));
 #endif

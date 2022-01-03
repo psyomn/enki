@@ -28,11 +28,25 @@ enum enki_status enki_init(void)
 	return ENKI_STATUS_OK;
 }
 
-void render_tilemap(SDL_Renderer *rr,
-		    const struct enki_tilemap *tm,
-		    const struct enki_level *level)
+static void render_objects(SDL_Renderer *rr,
+			   struct enki_object **objects,
+			   size_t len)
 {
-	// TODO layers
+	for (size_t i = 0; i < len; ++i)
+		SDL_RenderCopy(rr,
+			       objects[i]->texture->sdl_texture,
+			       &objects[i]->tx_pos, &objects[i]->tx_pos);
+}
+
+
+// TODO: combine tm + level
+static void render_tilemap(SDL_Renderer *rr,
+			   const struct enki_tilemap *tm,
+			   const struct enki_level *level)
+{
+	if (tm == NULL) return;
+	if (level == NULL) return;
+
 	for (size_t i = 0; i <= level->max_h_index; ++i) {
 		for (size_t j = 0; j <= level->max_w_index; ++j){
 			size_t tm_x = 0;
@@ -58,6 +72,15 @@ void render_tilemap(SDL_Renderer *rr,
 	}
 }
 
+static void objects_process_events(struct enki_object **objlist,
+				   size_t obj_len,
+				   SDL_Event *e)
+{
+	for (size_t i = 0; i < obj_len; ++i)
+		for (size_t j = 0; j < objlist[i]->ehook_len; ++j)
+			objlist[i]->ehooks[j](e);
+}
+
 void enki_render(struct enki_window *win,
 		 struct enki_level *level,
 		 struct enki_tilemap *tilemap,
@@ -71,17 +94,20 @@ void enki_render(struct enki_window *win,
 	while (1) {
 		const double frame_start = SDL_GetPerformanceCounter();
 
-		while (SDL_PollEvent(&e) != 0)
+		// events
+		while (SDL_PollEvent(&e) != 0) {
 			if (e.type == SDL_QUIT) return;
+			objects_process_events(objlist, objlen, &e);
+		}
 
+		// render
 		render_tilemap(win->renderer, tilemap, level);
-
+		render_objects(win->renderer, objlist, objlen);
 		SDL_RenderPresent(win->renderer);
 
+		// FPS
 		const double frame_end = SDL_GetPerformanceCounter();
-		SDL_Delay(enki_calculate_fps_delay(fragment,
-						   frame_start,
-						   frame_end));
+		SDL_Delay(enki_calculate_fps_delay(fragment, frame_start, frame_end));
 	}
 }
 

@@ -42,3 +42,23 @@ void enki_object_set_col(struct enki_object *object, int xpos, int ypos)
 	object->collision.y = ypos;
 }
 
+void enki_object_free(struct enki_object *object)
+{
+	free(object->ehooks);
+	free(object);
+}
+
+int enki_object_add_ehook(struct enki_object *object,
+			  void (*ehook)(SDL_Event*))
+{
+	void (**tmpehook)(SDL_Event*) = reallocarray(object->ehooks,
+						     object->ehook_len + 1,
+						     sizeof(object->ehooks[0]));
+	if (tmpehook == NULL) return -1;
+
+	object->ehooks = tmpehook;
+
+	object->ehooks[object->ehook_len] = ehook;
+	object->ehook_len += 1;
+	return 0;
+}

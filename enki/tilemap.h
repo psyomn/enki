@@ -52,4 +52,8 @@ void enki_tilemap_free(struct enki_tilemap *tilemap);
 void enki_tilemap_id_to_xy(const struct enki_tilemap *tilemap,
 			   const uint16_t id, size_t *x, size_t *y);
 
+/**
+ * enki_tilemap_print - print tilemap information
+ */
+void enki_tilemap_print(const struct enki_tilemap *tilemap);
 #endif

@@ -56,3 +56,19 @@ void enki_tilemap_id_to_xy(const struct enki_tilemap *tilemap,
 	*x = (id % tilemap->max_w_index) * tilemap->tile_width;
 	*y = (id / tilemap->max_h_index) * tilemap->tile_height;
 }
+
+void enki_tilemap_print(const struct enki_tilemap *tilemap)
+{
+	printf(
+		"tile width  : %lu \n"
+		"tile height : %lu \n"
+		"len         : %lu \n"
+		"max x index : %lu \n"
+		"max y index : %lu \n",
+		tilemap->tile_width,
+		tilemap->tile_height,
+		tilemap->len,
+		tilemap->max_w_index,
+		tilemap->max_h_index
+	);
+}
