@@ -28,6 +28,12 @@ struct enki_object {
 
 	/** ehook len */
 	size_t ehook_len;
+
+	/** SDL_Renderer hooks. */
+	void (*rhook)(SDL_Renderer*);
+
+	/** rhook len */
+	size_t rhook_len;
 };
 
 /**
@@ -56,4 +62,14 @@ void enki_object_free(struct enki_object *object);
  */
 int enki_object_add_ehook(struct enki_object *object,
 			  void (*ehook)(SDL_Event*));
+
+/**
+ * enki_object_set_rhook - sets a hook, to render special things only SDL2 would
+ * understand.  This is so that you could technically override any behavior,
+ * and, say, render an SDL_Rect for example.
+ *
+ * return 0 on success, return 1 on error (usually failure on realloc).
+ */
+void enki_object_set_rhook(struct enki_object *object,
+			   void (*rhook)(SDL_Renderer*));
 #endif

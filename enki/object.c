@@ -62,3 +62,8 @@ int enki_object_add_ehook(struct enki_object *object,
 	object->ehook_len += 1;
 	return 0;
 }
+
+void enki_object_set_rhook(struct enki_object *object, void (*rhook)(SDL_Renderer*))
+{
+	object->rhook = rhook;
+}

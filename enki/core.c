@@ -32,10 +32,13 @@ static void render_objects(SDL_Renderer *rr,
 			   struct enki_object **objects,
 			   size_t len)
 {
-	for (size_t i = 0; i < len; ++i)
+	for (size_t i = 0; i < len; ++i) {
+		if (objects[i]->texture == NULL) continue;
+
 		SDL_RenderCopy(rr,
 			       objects[i]->texture->sdl_texture,
 			       &objects[i]->tx_pos, &objects[i]->tx_pos);
+	}
 }
 
 
@@ -81,6 +84,16 @@ static void objects_process_events(struct enki_object **objlist,
 			objlist[i]->ehooks[j](e);
 }
 
+static void objects_process_renders(struct enki_object **objlist,
+				    size_t obj_len,
+				    SDL_Renderer *rr)
+{
+	for (size_t i = 0; i < obj_len; ++i) {
+		if (objlist[i]->rhook)
+			objlist[i]->rhook(rr);
+	}
+}
+
 void enki_render(struct enki_window *win,
 		 struct enki_level *level,
 		 struct enki_tilemap *tilemap,
@@ -101,8 +114,13 @@ void enki_render(struct enki_window *win,
 		}
 
 		// render
+		SDL_SetRenderDrawColor(win->renderer, 0, 0, 0, 0xff);
+		SDL_RenderClear(win->renderer);
+
 		render_tilemap(win->renderer, tilemap, level);
 		render_objects(win->renderer, objlist, objlen);
+		// TODO: before or after precedence might be important
+		objects_process_renders(objlist, objlen, win->renderer);
 		SDL_RenderPresent(win->renderer);
 
 		// FPS

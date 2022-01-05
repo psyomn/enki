@@ -16,10 +16,48 @@
 
 #include <SDL2/SDL.h>
 
+struct session {
+	SDL_Rect cursor;
+	int visible;
+	int tile_width;
+	int tile_height;
+} current_session = {
+	.cursor = {0},
+	.visible = 0,
+	.tile_width = 0,
+	.tile_height = 0,
+};
+
+static void cursor_render(SDL_Renderer *rr)
+{
+	if (!current_session.visible) return;
+
+	SDL_SetRenderDrawColor(rr, 0xff, 0, 0, 0xff);
+	SDL_RenderDrawRect(rr, &current_session.cursor);
+}
+
 void on_click(SDL_Event *e)
 {
-	if (e->type != SDL_KEYDOWN) return;
-	printf("yep\n");
+	if (e->type != SDL_MOUSEBUTTONDOWN) return;
+
+	if (e->button.button == SDL_BUTTON_RIGHT) {
+		current_session.visible = 0;
+		return;
+	}
+
+	if (e->button.button != SDL_BUTTON_LEFT) return;
+
+	current_session.visible = 1;
+
+	Sint32 x = e->button.x;
+	Sint32 y = e->button.y;
+
+	current_session.cursor.x = (x / 32) * 32;
+	current_session.cursor.y = (y / 32) * 32;
+	current_session.cursor.w = current_session.tile_width;
+	current_session.cursor.h = current_session.tile_height;
+
+	printf("%d %d\n", current_session.cursor.x, current_session.cursor.y);
 }
 
 int main(int argc, char *argv[])
@@ -42,12 +80,19 @@ int main(int argc, char *argv[])
 
 	struct enki_texture *texture = enki_texture_load_or_die(texture_filename, win);
 
+	// TODO: tile width should be inferred through name
+	current_session.tile_width = 32;
+	current_session.tile_height = 32;
 	struct enki_tilemap *tm = enki_tilemap_new(texture, 32, 32);
 
 	struct enki_object *object = enki_object_new(0, 0,
 						     tm->max_w_index * tm->tile_width,
 						     tm->max_h_index * tm->tile_height,
 						     texture);
+
+	struct enki_object *cursor = enki_object_new(0, 0, 0, 0, NULL);
+	enki_object_set_rhook(object, cursor_render);
+
 	enki_object_set_col(object,
 			    tm->max_w_index * tm->tile_width,
 			    tm->max_h_index * tm->tile_height);
@@ -59,6 +104,7 @@ int main(int argc, char *argv[])
 
 	struct enki_object *obj_list[] = {
 		object,
+		cursor,
 	};
 
 	enki_tilemap_print(tm);
@@ -69,7 +115,9 @@ int main(int argc, char *argv[])
 		    obj_list,
 		    ARRAY_SIZE(obj_list));
 
-	enki_object_free(object);
+	for (size_t i = 0; i < ARRAY_SIZE(obj_list); ++i)
+		enki_object_free(obj_list[i]);
+
 	enki_tilemap_free(tm);
 	enki_texture_free(texture);
 	enki_window_free(win);
