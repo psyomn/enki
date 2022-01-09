@@ -76,22 +76,28 @@ static void render_tilemap(SDL_Renderer *rr,
 }
 
 static void objects_process_events(struct enki_object **objlist,
-				   size_t obj_len,
+				   const size_t obj_len,
 				   SDL_Event *e)
 {
 	for (size_t i = 0; i < obj_len; ++i)
 		for (size_t j = 0; j < objlist[i]->ehook_len; ++j)
-			objlist[i]->ehooks[j](e);
+			objlist[i]->ehooks[j](objlist[i], e);
 }
 
 static void objects_process_renders(struct enki_object **objlist,
-				    size_t obj_len,
+				    const size_t obj_len,
 				    SDL_Renderer *rr)
 {
-	for (size_t i = 0; i < obj_len; ++i) {
-		if (objlist[i]->rhook)
-			objlist[i]->rhook(rr);
-	}
+	for (size_t i = 0; i < obj_len; ++i)
+		if (objlist[i]->rhook) objlist[i]->rhook(objlist[i], rr);
+}
+
+static void objects_process_physics(struct enki_object **objlist,
+				    const size_t obj_len,
+				    const double dt)
+{
+	for (size_t i = 0; i < obj_len; ++i)
+		if (objlist[i]->phook) objlist[i]->phook(objlist[i], dt);
 }
 
 void enki_render(struct enki_window *win,
@@ -104,8 +110,10 @@ void enki_render(struct enki_window *win,
 
 	// TODO: this should be refactored to just be for one render frame
 	SDL_Event e = {0};
+	Uint64 frame_last = 0;
+	Uint64 frame_now = SDL_GetPerformanceCounter();
 	while (1) {
-		const double frame_start = SDL_GetPerformanceCounter();
+		frame_last = frame_now;
 
 		// events
 		while (SDL_PollEvent(&e) != 0) {
@@ -123,22 +131,30 @@ void enki_render(struct enki_window *win,
 		objects_process_renders(objlist, objlen, win->renderer);
 		SDL_RenderPresent(win->renderer);
 
+
 		// FPS
-		const double frame_end = SDL_GetPerformanceCounter();
-		SDL_Delay(enki_calculate_fps_delay(fragment, frame_start, frame_end));
+		frame_now = SDL_GetPerformanceCounter();
+		const double dt = (double)((frame_now - frame_last)/1000.0 ) /
+					   (double) SDL_GetPerformanceFrequency();
+		const double delay = enki_calculate_fps_delay(fragment, dt);
+
+		// printf("frame_last:%lu frame_now:%lu dt:%f delay:%f\n",
+		//        frame_last, frame_now, dt, delay);
+
+		// physics
+		objects_process_physics(objlist, objlen, dt);
+
+
+		SDL_Delay(delay);
 	}
 }
 
-double enki_calculate_frame_fragment(double max_fps)
+double enki_calculate_frame_fragment(const double max_fps)
 {
-	return 1.0 / max_fps;
+	return 1.0 / max_fps * 1000;
 }
 
-double enki_calculate_fps_delay(double fragment,
-				uint64_t start_frame,
-				uint64_t end_frame)
+double enki_calculate_fps_delay(const double fragment, const double dt)
 {
-	const double diff = end_frame - start_frame;
-	const double elapsed = diff / SDL_GetPerformanceFrequency();
-	return floor(fragment - elapsed);
+	return fragment - dt;
 }

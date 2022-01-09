@@ -49,11 +49,12 @@ void enki_object_free(struct enki_object *object)
 }
 
 int enki_object_add_ehook(struct enki_object *object,
-			  void (*ehook)(SDL_Event*))
+			  void (*ehook)(struct enki_object*, SDL_Event*))
 {
-	void (**tmpehook)(SDL_Event*) = reallocarray(object->ehooks,
-						     object->ehook_len + 1,
-						     sizeof(object->ehooks[0]));
+	void (**tmpehook)(struct enki_object*, SDL_Event*) =
+		reallocarray(object->ehooks, object->ehook_len + 1,
+			     sizeof(object->ehooks[0]));
+
 	if (tmpehook == NULL) return -1;
 
 	object->ehooks = tmpehook;
@@ -63,7 +64,14 @@ int enki_object_add_ehook(struct enki_object *object,
 	return 0;
 }
 
-void enki_object_set_rhook(struct enki_object *object, void (*rhook)(SDL_Renderer*))
+void enki_object_set_rhook(struct enki_object *object,
+			   void (*rhook)(struct enki_object*, SDL_Renderer*))
 {
 	object->rhook = rhook;
+}
+
+void enki_object_set_phook(struct enki_object *object,
+			   void (*phook)(struct enki_object*, double dt))
+{
+	object->phook = phook;
 }

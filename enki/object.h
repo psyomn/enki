@@ -24,16 +24,19 @@ struct enki_object {
 	struct enki_texture *texture;
 
 	/** SDL_Event hooks. */
-	void (**ehooks)(SDL_Event*);
+	void (**ehooks)(struct enki_object *self, SDL_Event*);
 
 	/** ehook len */
 	size_t ehook_len;
 
 	/** SDL_Renderer hooks. */
-	void (*rhook)(SDL_Renderer*);
+	void (*rhook)(struct enki_object *self, SDL_Renderer*);
 
-	/** rhook len */
-	size_t rhook_len;
+	/** physics hook. */
+	void (*phook)(struct enki_object *self, double dt);
+
+	int speed_x;
+	int speed_y;
 };
 
 /**
@@ -44,10 +47,8 @@ void enki_object_set_col(struct enki_object *object, int xpos, int ypos);
 /**
  * enki_object_new - will create a new object, possible to render in the scene.
  */
-struct enki_object *enki_object_new(int xpos,
-				    int ypos,
-			            int width,
-			            int height,
+struct enki_object *enki_object_new(int xpos, int ypos,
+			            int width, int height,
 			            struct enki_texture *texture);
 
 /**
@@ -61,7 +62,7 @@ void enki_object_free(struct enki_object *object);
  * return 0 on success, return 1 on error (usually failure on realloc).
  */
 int enki_object_add_ehook(struct enki_object *object,
-			  void (*ehook)(SDL_Event*));
+			  void (*ehook)(struct enki_object*, SDL_Event*));
 
 /**
  * enki_object_set_rhook - sets a hook, to render special things only SDL2 would
@@ -71,5 +72,12 @@ int enki_object_add_ehook(struct enki_object *object,
  * return 0 on success, return 1 on error (usually failure on realloc).
  */
 void enki_object_set_rhook(struct enki_object *object,
-			   void (*rhook)(SDL_Renderer*));
+			   void (*rhook)(struct enki_object*, SDL_Renderer*));
+
+/**
+ * enki_object_set_phook - sets a hook, to calculate the physics on a delta
+ * time.
+ */
+void enki_object_set_phook(struct enki_object *object,
+			   void (*phook)(struct enki_object*, double dt));
 #endif

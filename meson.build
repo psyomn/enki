@@ -113,6 +113,13 @@ executable('enki-texture-info',
   dependencies : dep_all,
 )
 
+executable('enki-pong',
+  sources : ['cmd/pong.c'],
+  c_args : c_flags,
+  link_with : enki_lib,
+  dependencies : dep_all,
+)
+
 ## tests
 
 tilemap_tests = executable(

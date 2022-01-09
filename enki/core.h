@@ -33,14 +33,12 @@ void enki_render(struct enki_window *win,
  * enki_calculate_frame_fragment - will calculate the time slice that allows for
  * frame renders.
  */
-double enki_calculate_frame_fragment(double max_fps);
+double enki_calculate_frame_fragment(const double max_fps);
 
 /**
  * enki_calculate_fps_delay - is the delay amount to regulate fps in a loop.
  * max_fps is the desired frames in a second.
  */
-double enki_calculate_fps_delay(double fragment,
-				uint64_t start_frame,
-				uint64_t end_frame);
+double enki_calculate_fps_delay(const double fragment, const double dt);
 
 #endif
