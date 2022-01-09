@@ -28,16 +28,20 @@ struct session {
 	.tile_height = 0,
 };
 
-static void cursor_render(SDL_Renderer *rr)
+static void cursor_render(struct enki_object *self, SDL_Renderer *rr)
 {
+	(void) self;
+
 	if (!current_session.visible) return;
 
 	SDL_SetRenderDrawColor(rr, 0xff, 0, 0, 0xff);
 	SDL_RenderDrawRect(rr, &current_session.cursor);
 }
 
-void on_click(SDL_Event *e)
+void on_click(struct enki_object *self, SDL_Event *e)
 {
+	(void) self;
+
 	if (e->type != SDL_MOUSEBUTTONDOWN) return;
 
 	if (e->button.button == SDL_BUTTON_RIGHT) {
@@ -57,13 +61,18 @@ void on_click(SDL_Event *e)
 	current_session.cursor.w = current_session.tile_width;
 	current_session.cursor.h = current_session.tile_height;
 
-	printf("%d %d\n", current_session.cursor.x, current_session.cursor.y);
+	printf("%d %d = id(%d)\n",
+	       current_session.cursor.x,
+	       current_session.cursor.y,
+	       0
+	);
 }
 
 int main(int argc, char *argv[])
 {
 	if (argc < 2) {
-		printf("usage: ");
+		printf("usage: \n"
+		       "  %s <tileset_32x32.png>", argv[0]);
 		return 1;
 	}
 
@@ -109,11 +118,7 @@ int main(int argc, char *argv[])
 
 	enki_tilemap_print(tm);
 
-	enki_render(win,
-		    NULL,
-		    NULL,
-		    obj_list,
-		    ARRAY_SIZE(obj_list));
+	enki_render(win, NULL, NULL, obj_list, ARRAY_SIZE(obj_list));
 
 	for (size_t i = 0; i < ARRAY_SIZE(obj_list); ++i)
 		enki_object_free(obj_list[i]);
