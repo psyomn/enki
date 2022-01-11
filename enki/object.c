@@ -23,7 +23,9 @@ struct enki_object *enki_object_new(int xpos,
 	object->texture = texture;
 
 	object->tx_pos.x = xpos;
+	object->x = xpos;
 	object->tx_pos.y = ypos;
+	object->y = ypos;
 	object->tx_pos.w = width;
 	object->tx_pos.h = height;
 
@@ -38,8 +40,8 @@ struct enki_object *enki_object_new(int xpos,
 
 void enki_object_set_col(struct enki_object *object, int xpos, int ypos)
 {
-	object->collision.x = xpos;
-	object->collision.y = ypos;
+	object->collision.w = xpos;
+	object->collision.h = ypos;
 }
 
 void enki_object_free(struct enki_object *object)
@@ -75,3 +77,34 @@ void enki_object_set_phook(struct enki_object *object,
 {
 	object->phook = phook;
 }
+
+void enki_object_set_chook(struct enki_object *object,
+			   void (*chook)(struct enki_object*, struct enki_object*))
+{
+	object->chook = chook;
+}
+
+void enki_object_update_pos(struct enki_object *object, double dt)
+{
+	object->x += dt * object->speed_x;
+	object->y += dt * object->speed_y;
+	object->tx_pos.x = object->x;
+	object->tx_pos.y = object->y;
+	object->collision.x = object->x;
+	object->collision.y = object->y;
+}
+
+void enki_object_set_x(struct enki_object *object, double x)
+{
+	object->x = x;
+	object->tx_pos.x = x;
+	object->collision.x = x;
+}
+
+void enki_object_set_y(struct enki_object *object, double y)
+{
+	object->y = y;
+	object->tx_pos.y = y;
+	object->collision.y = y;
+}
+

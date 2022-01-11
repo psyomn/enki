@@ -100,6 +100,33 @@ static void objects_process_physics(struct enki_object **objlist,
 		if (objlist[i]->phook) objlist[i]->phook(objlist[i], dt);
 }
 
+static void objects_process_collisions(struct enki_object **objlist,
+				       const size_t obj_len)
+{
+	for (size_t i = 0; i < obj_len; ++i) {
+		for (size_t j = i + 1; j < obj_len; ++j) {
+			const uint64_t in_groups = objlist[i]->group & objlist[j]->group;
+
+			SDL_Rect result = {0};
+
+			const SDL_bool rect_collision =
+				SDL_IntersectRect(&objlist[i]->collision,
+						  &objlist[j]->collision,
+						  &result);
+
+			if (rect_collision) printf("group:%lu sdlcol:%d\n hook:%p",
+						   in_groups, rect_collision, objlist[i]->chook);
+
+			if (rect_collision && in_groups) {
+				if (objlist[i]->chook)
+					objlist[i]->chook(objlist[i], objlist[j]);
+				if (objlist[j]->chook)
+					objlist[j]->chook(objlist[j], objlist[i]);
+			}
+		}
+	}
+}
+
 void enki_render(struct enki_window *win,
 		 struct enki_level *level,
 		 struct enki_tilemap *tilemap,
@@ -138,11 +165,9 @@ void enki_render(struct enki_window *win,
 					   (double) SDL_GetPerformanceFrequency();
 		const double delay = enki_calculate_fps_delay(fragment, dt);
 
-		// printf("frame_last:%lu frame_now:%lu dt:%f delay:%f\n",
-		//        frame_last, frame_now, dt, delay);
-
 		// physics
 		objects_process_physics(objlist, objlen, dt);
+		objects_process_collisions(objlist, objlen);
 
 
 		SDL_Delay(delay);

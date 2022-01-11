@@ -28,6 +28,8 @@ struct session {
 	.tile_height = 0,
 };
 
+struct enki_texture *texture = NULL;
+
 static void cursor_render(struct enki_object *self, SDL_Renderer *rr)
 {
 	(void) self;
@@ -61,10 +63,17 @@ void on_click(struct enki_object *self, SDL_Event *e)
 	current_session.cursor.w = current_session.tile_width;
 	current_session.cursor.h = current_session.tile_height;
 
+	int texture_width = 0, texture_height = 0;
+	SDL_QueryTexture(texture->sdl_texture, NULL, NULL,
+			 &texture_width, &texture_height);
+
+	const int max_w_index = texture_width / 32;
+
 	printf("%d %d = id(%d)\n",
 	       current_session.cursor.x,
 	       current_session.cursor.y,
-	       0
+	       current_session.cursor.y/32 * max_w_index +
+	       current_session.cursor.x/32
 	);
 }
 
@@ -87,7 +96,7 @@ int main(int argc, char *argv[])
 		window_title, sizeof(window_title),
 		window_width, window_height);
 
-	struct enki_texture *texture = enki_texture_load_or_die(texture_filename, win);
+	texture = enki_texture_load_or_die(texture_filename, win);
 
 	// TODO: tile width should be inferred through name
 	current_session.tile_width = 32;

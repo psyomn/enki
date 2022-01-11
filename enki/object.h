@@ -14,6 +14,8 @@
 #include "enki/graphics.h"
 
 struct enki_object {
+	uint64_t id;
+
 	/** contains rendering position information */
 	SDL_Rect tx_pos;
 
@@ -35,8 +37,18 @@ struct enki_object {
 	/** physics hook. */
 	void (*phook)(struct enki_object *self, double dt);
 
-	int speed_x;
-	int speed_y;
+	/** collision hook. */
+	void (*chook)(struct enki_object *self, struct enki_object *other);
+
+	double x;
+	double y;
+	double speed_x;
+	double speed_y;
+
+	uint64_t group;
+
+	/** anything the user might want to attach to (eg a custom struct) */
+	void *extra;
 };
 
 /**
@@ -80,4 +92,21 @@ void enki_object_set_rhook(struct enki_object *object,
  */
 void enki_object_set_phook(struct enki_object *object,
 			   void (*phook)(struct enki_object*, double dt));
+
+/**
+ * enki_object_set_chook - sets a hook, to define behavior upon collision
+ */
+void enki_object_set_chook(struct enki_object *object,
+			   void (*chook)(struct enki_object*, struct enki_object*));
+
+/**
+ * enki_object_update_pos - will update the x, y pos depending on set velocities
+ * speed_x, and speed_y.
+ */
+void enki_object_update_pos(struct enki_object *object, double dt);
+
+void enki_object_set_x(struct enki_object *object, double x);
+
+void enki_object_set_y(struct enki_object *object, double y);
+
 #endif
