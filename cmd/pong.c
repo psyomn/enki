@@ -14,8 +14,7 @@
 #include "enki/window.h"
 #include "enki/object.h"
 
-#define PONG_TEXTURE_FILE "assets/PongBasicBoard.png"
-
+const char *PONG_TEXTURE_FILE = "assets/PongBasicBoard.png";
 const int PLAYER_ID = 1;
 const int ENEMY_ID = 2;
 const int WINDOW_WIDTH = 320;
@@ -175,7 +174,7 @@ int main(void)
 	// actors
 	struct enki_object *paddle_1 = enki_object_new(32, 32, 16, 64, NULL);
 	enki_object_set_rhook(paddle_1, paddle_render);
-	enki_object_add_ehook(paddle_1, paddle_event);
+	enki_object_set_ehook(paddle_1, paddle_event);
 	enki_object_set_phook(paddle_1, paddle_physics);
 	enki_object_set_col(paddle_1, 16, 64);
 	paddle_1->id = PLAYER_ID;

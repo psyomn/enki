@@ -110,15 +110,10 @@ int main(int argc, char *argv[])
 
 	struct enki_object *cursor = enki_object_new(0, 0, 0, 0, NULL);
 	enki_object_set_rhook(object, cursor_render);
-
 	enki_object_set_col(object,
 			    tm->max_w_index * tm->tile_width,
 			    tm->max_h_index * tm->tile_height);
-
-	if (enki_object_add_ehook(object, on_click) == -1) {
-		fprintf(stderr, "%s: could not add hook to object\n", __FILE__);
-		abort();
-	}
+	enki_object_set_ehook(object, on_click);
 
 	struct enki_object *obj_list[] = {
 		object,

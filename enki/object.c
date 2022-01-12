@@ -46,24 +46,13 @@ void enki_object_set_col(struct enki_object *object, int xpos, int ypos)
 
 void enki_object_free(struct enki_object *object)
 {
-	free(object->ehooks);
 	free(object);
 }
 
-int enki_object_add_ehook(struct enki_object *object,
-			  void (*ehook)(struct enki_object*, SDL_Event*))
+void enki_object_set_ehook(struct enki_object *object,
+			   void (*ehook)(struct enki_object*, SDL_Event*))
 {
-	void (**tmpehook)(struct enki_object*, SDL_Event*) =
-		reallocarray(object->ehooks, object->ehook_len + 1,
-			     sizeof(object->ehooks[0]));
-
-	if (tmpehook == NULL) return -1;
-
-	object->ehooks = tmpehook;
-
-	object->ehooks[object->ehook_len] = ehook;
-	object->ehook_len += 1;
-	return 0;
+	object->ehook = ehook;
 }
 
 void enki_object_set_rhook(struct enki_object *object,

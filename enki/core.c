@@ -80,8 +80,7 @@ static void objects_process_events(struct enki_object **objlist,
 				   SDL_Event *e)
 {
 	for (size_t i = 0; i < obj_len; ++i)
-		for (size_t j = 0; j < objlist[i]->ehook_len; ++j)
-			objlist[i]->ehooks[j](objlist[i], e);
+		if (objlist[i]->ehook) objlist[i]->ehook(objlist[i], e);
 }
 
 static void objects_process_renders(struct enki_object **objlist,

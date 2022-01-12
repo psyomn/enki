@@ -25,19 +25,18 @@ struct enki_object {
 	/** Shared.  Can be NULL. */
 	struct enki_texture *texture;
 
-	/** SDL_Event hooks. */
-	void (**ehooks)(struct enki_object *self, SDL_Event*);
-
-	/** ehook len */
-	size_t ehook_len;
-
-	/** SDL_Renderer hooks. */
+	/* we define some hooks so that we can inject certain behavior, from
+	 * outside the library.
+	 *
+	 * ehook - sdl event hook
+	 * rhook - sdl render hook
+	 * phook - physics hook; calculate dt movement and other stuff here
+	 * chook - collision hook; at the end of the render cycle, send
+	 *         actors/objects the message of successful collision
+	 */
+	void (*ehook)(struct enki_object *self, SDL_Event*);
 	void (*rhook)(struct enki_object *self, SDL_Renderer*);
-
-	/** physics hook. */
 	void (*phook)(struct enki_object *self, double dt);
-
-	/** collision hook. */
 	void (*chook)(struct enki_object *self, struct enki_object *other);
 
 	double x;
@@ -45,6 +44,7 @@ struct enki_object {
 	double speed_x;
 	double speed_y;
 
+	/* collision groups -- ignore anything which is not the same bitgroup */
 	uint64_t group;
 
 	/** anything the user might want to attach to (eg a custom struct) */
@@ -69,12 +69,10 @@ struct enki_object *enki_object_new(int xpos, int ypos,
 void enki_object_free(struct enki_object *object);
 
 /**
- * enki_object_add_ehook - adds a hook, to be executed upon an event.
- *
- * return 0 on success, return 1 on error (usually failure on realloc).
+ * enki_object_set_ehook - adds a hook, to be executed upon an event.
  */
-int enki_object_add_ehook(struct enki_object *object,
-			  void (*ehook)(struct enki_object*, SDL_Event*));
+void enki_object_set_ehook(struct enki_object *object,
+			   void (*ehook)(struct enki_object*, SDL_Event*));
 
 /**
  * enki_object_set_rhook - sets a hook, to render special things only SDL2 would
