@@ -28,17 +28,4 @@ void enki_render(struct enki_window *win,
 		 struct enki_tilemap *tilemap,
 		 struct enki_object **objlist,
 		 size_t objlen);
-
-/**
- * enki_calculate_frame_fragment - will calculate the time slice that allows for
- * frame renders.
- */
-double enki_calculate_frame_fragment(const double max_fps);
-
-/**
- * enki_calculate_fps_delay - is the delay amount to regulate fps in a loop.
- * max_fps is the desired frames in a second.
- */
-double enki_calculate_fps_delay(const double fragment, const double dt);
-
 #endif

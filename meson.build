@@ -66,6 +66,7 @@ enki_srcs = [
   'enki/graphics.c',
   'enki/level.c',
   'enki/object.c',
+  'enki/sound.c',
   'enki/window.c',
   'enki/tilemap.c',
 ]
@@ -76,6 +77,7 @@ enki_hdrs = [
   'enki/graphics.h',
   'enki/level.h',
   'enki/object.h',
+  'enki/sound.h',
   'enki/window.h',
   'enki/tilemap.h',
 ]

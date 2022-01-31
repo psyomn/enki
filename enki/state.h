@@ -13,8 +13,10 @@
 #include "enki/object.h"
 #include "enki/tilemap.h"
 
-struct enki_state {
+struct enki_scene {
 	size_t actors_len;
 	struct enki_object **actors;
+	struct enki_level *level;
+	struct enki_tilemap *tilemap;
 };
 #endif

@@ -41,7 +41,6 @@ static void render_objects(SDL_Renderer *rr,
 	}
 }
 
-
 // TODO: combine tm + level
 static void render_tilemap(SDL_Renderer *rr,
 			   const struct enki_tilemap *tm,
@@ -113,9 +112,6 @@ static void objects_process_collisions(struct enki_object **objlist,
 						  &objlist[j]->collision,
 						  &result);
 
-			if (rect_collision) printf("group:%lu sdlcol:%d\n hook:%p",
-						   in_groups, rect_collision, objlist[i]->chook);
-
 			if (rect_collision && in_groups) {
 				if (objlist[i]->chook)
 					objlist[i]->chook(objlist[i], objlist[j]);
@@ -126,13 +122,23 @@ static void objects_process_collisions(struct enki_object **objlist,
 	}
 }
 
+static double calculate_fps_delay(const double fragment, const double dt)
+{
+	return fragment - dt;
+}
+
+static double calculate_frame_fragment(const double max_fps)
+{
+	return 1.0 / max_fps * 1000;
+}
+
 void enki_render(struct enki_window *win,
 		 struct enki_level *level,
 		 struct enki_tilemap *tilemap,
 		 struct enki_object **objlist,
 		 size_t objlen)
 {
-	const double fragment = enki_calculate_frame_fragment(60.0);
+	const double fragment = calculate_frame_fragment(60.0);
 
 	// TODO: this should be refactored to just be for one render frame
 	SDL_Event e = {0};
@@ -157,28 +163,17 @@ void enki_render(struct enki_window *win,
 		objects_process_renders(objlist, objlen, win->renderer);
 		SDL_RenderPresent(win->renderer);
 
-
 		// FPS
 		frame_now = SDL_GetPerformanceCounter();
 		const double dt = (double)((frame_now - frame_last)/1000.0 ) /
 					   (double) SDL_GetPerformanceFrequency();
-		const double delay = enki_calculate_fps_delay(fragment, dt);
+		const double delay = calculate_fps_delay(fragment, dt);
 
 		// physics
 		objects_process_physics(objlist, objlen, dt);
 		objects_process_collisions(objlist, objlen);
 
-
 		SDL_Delay(delay);
 	}
 }
 
-double enki_calculate_frame_fragment(const double max_fps)
-{
-	return 1.0 / max_fps * 1000;
-}
-
-double enki_calculate_fps_delay(const double fragment, const double dt)
-{
-	return fragment - dt;
-}

@@ -11,10 +11,13 @@
 
 #include "enki/core.h"
 #include "enki/common.h"
+#include "enki/sound.h"
 #include "enki/window.h"
 #include "enki/object.h"
 
 const char *PONG_TEXTURE_FILE = "assets/PongBasicBoard.png";
+const char *PONG_SOUND_BOUNCE = "/home/psyomn/programming/c/enki/build/assets/pong-bounce.wav";
+const char *PONG_SOUND_SCORE = "./assets/pong-score.wav";
 const int PLAYER_ID = 1;
 const int ENEMY_ID = 2;
 const int WINDOW_WIDTH = 320;
@@ -29,6 +32,11 @@ struct game_state {
 	int score_player;
 	int score_ai;
 } game_state = {0};
+
+struct ball_state {
+	struct enki_sound *bounce;
+	struct enki_sound *score;
+} ball_state = {0};
 
 struct enki_level *create_map(void)
 {
@@ -138,6 +146,8 @@ static void ball_physics(struct enki_object *self, const double dt)
 
 place_ball_on_center:
 	printf("player:%d ai:%d\n", game_state.score_player, game_state.score_ai);
+	enki_sound_play(((struct ball_state*)self->extra)->score);
+
 	const int init_speed = 64000;
 	self->speed_x = rand() % 1000 < 500 ? init_speed : -init_speed;
 	self->speed_y = rand() % 1000 < 500 ? init_speed : -init_speed;
@@ -153,15 +163,21 @@ static void ball_on_collision(struct enki_object *self, struct enki_object *othe
 		self->speed_x + incr_speed :
 		self->speed_x - incr_speed;
 
-	if (other->id == PLAYER_ID && self->speed_x < 0)
+	if (other->id == PLAYER_ID && self->speed_x < 0) {
 		self->speed_x = -next_speed;
-	if (other->id == ENEMY_ID && self->speed_x > 0)
+		enki_sound_play(((struct ball_state*)self->extra)->bounce);
+	}
+	if (other->id == ENEMY_ID && self->speed_x > 0) {
 		self->speed_x = -next_speed;
+		enki_sound_play(((struct ball_state*)self->extra)->bounce);
+	}
 }
 
 int main(void)
 {
 	srand(time(NULL));
+
+	enki_init_sound();
 
 	const char *title = "pong";
 	struct enki_window *win = enki_window_new(title, sizeof(title),
@@ -170,6 +186,14 @@ int main(void)
 	struct enki_texture *background = enki_texture_load_or_die(PONG_TEXTURE_FILE, win);
 	struct enki_tilemap *tilemap = enki_tilemap_new(background, 32, 32);
 	struct enki_level *map = create_map();
+
+	// sound
+	struct enki_sound *bounce = enki_sound_load_or_die(PONG_SOUND_BOUNCE);
+	struct enki_sound *score = enki_sound_load_or_die(PONG_SOUND_SCORE);
+	struct enki_sound *sounds[] = {
+		bounce,
+		score,
+	};
 
 	// actors
 	struct enki_object *paddle_1 = enki_object_new(32, 32, 16, 64, NULL);
@@ -201,6 +225,9 @@ int main(void)
 	ball->speed_x = rand() % 1000 < 500 ? init_speed : -init_speed;
 	ball->speed_y = rand() % 1000 < 500 ? init_speed : -init_speed;
 	ball->group = 1;
+	ball_state.bounce = bounce;
+	ball_state.score = score;
+	ball->extra = &ball_state;
 
 	ai_paddle_state.player_paddle = paddle_1;
 	ai_paddle_state.ball = ball;
@@ -219,8 +246,12 @@ int main(void)
 	enki_tilemap_free(tilemap);
 	enki_texture_free(background);
 	enki_window_free(win);
+
 	for (size_t i = 0; i < ARRAY_SIZE(actors); ++i)
 		enki_object_free(actors[i]);
+
+	for (size_t i = 0; i < ARRAY_SIZE(sounds); ++i)
+		enki_sound_free(sounds[i]);
 
 	return 0;
 }
